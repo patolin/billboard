@@ -1,6 +1,8 @@
 import sys
 import pygame
 import time
+import calendar
+from datetime import date
 
 from pygame.locals import *
 
@@ -10,8 +12,8 @@ fpsClock=pygame.time.Clock()
 #opciones del grafico
 ancho=240
 alto=320
-numFilas=5
-numColumnas=3
+numFilas=7
+numColumnas=4
 borde=2
 posActualSelector=0
 sumaValor=0
@@ -20,9 +22,9 @@ sumaValor=0
 NEGRO=(0,0,0)
 BLANCO=(255,255,255)
 AZUL=(0,0,255)
-TEXTO=(0,0,0)
+TEXTO=(255,255,255)
 FONDO=(0,0,0)
-CUADROS=(255,0,0)
+CUADROS=(0,0,0)
 RESALTADO=(0,255,0)
 
 tituloX=ancho*2
@@ -38,34 +40,35 @@ for fila in range(numFilas):
 			num=0	
 	arrNumeros.append(arrCol)
 
-print arrNumeros
-
 pygame.init()
 #pygame.font.init()
 
 
-fontObj=pygame.font.Font('freesansbold.ttf',32)
-
+fontObj=pygame.font.Font('DS-DIGIT.TTF',24)
+fontObj1=pygame.font.Font('DS-DIGIT.TTF',18)
 
 DISPLAYSURF=pygame.display.set_mode((ancho,alto))
 pygame.display.set_caption("Demo")
 
 
 def dibujaEncabezado():
+	my_date = date.today()
+	today = calendar.day_name[my_date.weekday()]
 	fecha=time.strftime("%Y/%m/%d")
-	textSurfaceObj=fontObj.render(fecha,True, BLANCO, FONDO)
+	textSurfaceObj=fontObj1.render(fecha,True, BLANCO, FONDO)
 	textRectObj=textSurfaceObj.get_rect()
-	textRectObj.center=((ancho/2),16)
+	textRectObj.center=((ancho/2),48)
 	DISPLAYSURF.blit(textSurfaceObj, textRectObj)
 	
-	textSurfaceObj=fontObj.render("Evento especial",True, BLANCO, FONDO)
+	textSurfaceObj=fontObj.render(today,True, BLANCO, FONDO)
 	textRectObj=textSurfaceObj.get_rect()
-	textRectObj.center=(tituloX,48)
+	textRectObj.center=(tituloX,16)
 	DISPLAYSURF.blit(textSurfaceObj, textRectObj)
 	
 def dibujaCuadros():
 	global sumaValor
-	anchoCuadro=ancho/numColumnas
+	offsetX=130
+	anchoCuadro=22 #ancho/numColumnas
 	altoCuadro=(alto-64)/numFilas
 	cuadroActual=0
 	for y in range(numFilas):
@@ -84,11 +87,11 @@ def dibujaCuadros():
 
 			else:
 				COLOR=CUADROS
-			pygame.draw.rect(DISPLAYSURF, COLOR, ( x*anchoCuadro ,64+(y*altoCuadro), (anchoCuadro-borde), (altoCuadro-borde)))
+			pygame.draw.rect(DISPLAYSURF, COLOR, ( offsetX+x*anchoCuadro ,64+(y*altoCuadro), (anchoCuadro-borde), (altoCuadro-borde)))
 			#dibujamos el numero actual
 			textSurfaceObj=fontObj.render(str(arrNums[x]),True, BLANCO, COLOR)
 			textRectObj=textSurfaceObj.get_rect()
-			textRectObj.center=((anchoCuadro/2)+x*(anchoCuadro),(64+altoCuadro/2)+y*(altoCuadro))
+			textRectObj.center=(offsetX+(anchoCuadro/2)+x*(anchoCuadro),(64+altoCuadro/2)+y*(altoCuadro))
 			DISPLAYSURF.blit(textSurfaceObj, textRectObj)			
 
 

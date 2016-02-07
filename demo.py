@@ -10,14 +10,17 @@ FPS=30
 fpsClock=pygame.time.Clock()
 
 #opciones del grafico
-ancho=240
-alto=320
+ancho=1024
+alto=1900
 numFilas=7
 numColumnas=4
 borde=2
 posActualSelector=0
 sumaValor=0
 
+altoLetra1=180
+altoLetra2=120
+anchoLetra=120
 #colores
 NEGRO=(0,0,0)
 BLANCO=(255,255,255)
@@ -56,10 +59,11 @@ pygame.init()
 #pygame.font.init()
 
 
-fontObj=pygame.font.Font('DS-DIGIT.TTF',24)
-fontObj1=pygame.font.Font('DS-DIGIT.TTF',18)
+fontObj=pygame.font.Font('DS-DIGIT.TTF',altoLetra1)
+fontObj1=pygame.font.Font('DS-DIGIT.TTF',altoLetra2)
 
-DISPLAYSURF=pygame.display.set_mode((ancho,alto))
+
+DISPLAYSURF=pygame.display.set_mode((ancho,alto),pygame.FULLSCREEN)
 pygame.display.set_caption("Demo")
 
 
@@ -71,8 +75,6 @@ def dibujaEncabezado():
     my_date = date.today()
     #cambiamos el mensaje
     if (posActualSelector==-1):
-        print "Cambiando Top: "
-        print str(sumaValor)
         numMensajesTop=len(arrMensajesTop)
         if (sumaValor!=0):
             mensajeTopActual+=sumaValor
@@ -87,20 +89,23 @@ def dibujaEncabezado():
     else:
         today = arrMensajesTop[mensajeTopActual]
     fecha=time.strftime("%Y/%m/%d")
-    textSurfaceObj=fontObj1.render(fecha,True, BLANCO, FONDO)
-    textRectObj=textSurfaceObj.get_rect()
-    textRectObj.center=((ancho/2),48)
-    DISPLAYSURF.blit(textSurfaceObj, textRectObj)
+    #titulo
     textSurfaceObj=fontObj.render(today,True, BLANCO, FONDO)
     textRectObj=textSurfaceObj.get_rect()
-    textRectObj.center=(tituloX,16)
+    textRectObj.center=(tituloX,altoLetra1)
+    DISPLAYSURF.blit(textSurfaceObj, textRectObj)
+    #fecha
+    textSurfaceObj=fontObj1.render(fecha,True, BLANCO, FONDO)
+    textRectObj=textSurfaceObj.get_rect()
+    textRectObj.center=((ancho/2),altoLetra1+(altoLetra2))
     DISPLAYSURF.blit(textSurfaceObj, textRectObj)
         
 def dibujaCuadros():
         global sumaValor
-        offsetX=130
-        anchoCuadro=22 #ancho/numColumnas
-        altoCuadro=(alto-64)/numFilas
+        offsetX=anchoLetra*4
+        offsetY=altoLetra1*2
+        anchoCuadro=anchoLetra #ancho/numColumnas
+        altoCuadro=(alto-offsetY)/numFilas
         cuadroActual=0
         for y in range(numFilas):
                 arrNums=arrNumeros[y]
@@ -118,28 +123,38 @@ def dibujaCuadros():
 
                         else:
                                 COLOR=CUADROS
-                        pygame.draw.rect(DISPLAYSURF, COLOR, ( offsetX+x*anchoCuadro ,64+(y*altoCuadro), (anchoCuadro-borde), (altoCuadro-borde)))
+                        pygame.draw.rect(DISPLAYSURF, COLOR, ( offsetX+x*anchoCuadro ,offsetY+(y*altoCuadro), (anchoCuadro-borde), (altoCuadro-borde)))
                         #dibujamos el numero actual
                         textSurfaceObj=fontObj.render(str(arrNums[x]),True, BLANCO, COLOR)
                         textRectObj=textSurfaceObj.get_rect()
-                        textRectObj.center=(offsetX+(anchoCuadro/2)+x*(anchoCuadro),(64+altoCuadro/2)+y*(altoCuadro))
+                        textRectObj.center=(offsetX+(anchoCuadro/2)+x*(anchoCuadro),(offsetY+altoCuadro/2)+y*(altoCuadro))
                         DISPLAYSURF.blit(textSurfaceObj, textRectObj)			
 
 
                         cuadroActual+=1
 
+#splash screen
+DISPLAYSURF.fill(FONDO)
+image = pygame.image.load("logo.png")
+DISPLAYSURF.blit(image, (0,0))
+pygame.display.update()
+pygame.time.delay(5000)
+
 while True:
         DISPLAYSURF.fill(FONDO)
         dibujaEncabezado()
         dibujaCuadros()
-        tituloX -= 1
+        tituloX -= 5
         if (tituloX<=(-ancho*2)):
                 tituloX=ancho*2
         for event in pygame.event.get():
                 if event.type==QUIT:
                         pygame.quit()
                         sys,exit()
-                elif event.type==KEYUP:		
+                elif event.type==KEYUP:
+                        if event.key==K_q:
+                                pygame.quit()
+                                sys,exit()        
                         if event.key==K_RIGHT:
                                 posActualSelector+=1
                                 if (posActualSelector>(numFilas*numColumnas-1)):
